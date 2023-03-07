@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	mongoOptions "go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -40,6 +41,20 @@ func init() {
 
 func InsertComment(comment *Comment) (r *DAOResponse) {
 	if _, err := gomonDatabase.Collection("comments").InsertOne(context.TODO(), comment); err != nil {
+		return &DAOResponse{Status: DAOFailed, Msg: fmt.Sprint(err)}
+	}
+	return &DAOResponse{Status: DAOSuccess}
+}
+
+func RemoveComment(comment *Comment) (r *DAOResponse) {
+	if _, err := gomonDatabase.Collection("comments").DeleteOne(context.TODO(), comment); err != nil {
+		return &DAOResponse{Status: DAOFailed, Msg: fmt.Sprint(err)}
+	}
+	return &DAOResponse{Status: DAOSuccess}
+}
+
+func UpdateComment(comment *Comment) (r *DAOResponse) {
+	if _, err := gomonDatabase.Collection("comments").UpdateByID(context.TODO(), bson.D{{Key: "_id", Value: comment.Id}}, comment); err != nil {
 		return &DAOResponse{Status: DAOFailed, Msg: fmt.Sprint(err)}
 	}
 	return &DAOResponse{Status: DAOSuccess}
