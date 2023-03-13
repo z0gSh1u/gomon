@@ -6,6 +6,7 @@
         class="gomon-input gomon-nickname"
         placeholder="昵称"
       />
+      <span class="gomon-delim">&nbsp;|&nbsp;</span>
       <input type="text" class="gomon-input gomon-email" placeholder="Email" />
     </div>
     <div class="gomon-body">
@@ -36,7 +37,9 @@
         <button class="button">预览MD</button>
       </div>
       <div class="rightalign">
-        <button class="button button-primary">发送评论</button>
+        <button class="button button-primary" @click="submitComment">
+          发送评论
+        </button>
       </div>
     </div>
   </div>
@@ -45,17 +48,27 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import _useEmoji from '../hooks/useEmoji'
+import { CommentEditorConfig } from '../utils/gomon-types'
+import {useAxios} from '../hooks/useAxios'
 
 const RegisteredEmojis = '😀😁😅😂👀😍😎😏😟😭✌️👍👎🎉'
 const useEmoji = _useEmoji(RegisteredEmojis)
 
 export default defineComponent({
+  props: { ...CommentEditorConfig },
   setup(props) {
     let rawContent = ref('')
     let showEmoji = ref(false)
+    const { run: runSubmitComment } = useAxios('...', {
+      
+    })
 
     function appendEmoji(idx: number) {
       rawContent.value += useEmoji(idx)
+    }
+
+    function submitComment() {
+      
     }
 
     return {
@@ -64,6 +77,7 @@ export default defineComponent({
       useEmoji,
       appendEmoji,
       showEmoji,
+      submitComment,
     }
   },
 })
@@ -130,5 +144,9 @@ export default defineComponent({
     position: absolute;
     right: 0.5rem;
   }
+}
+
+.gomon-delim {
+  color: #ddd;
 }
 </style>
