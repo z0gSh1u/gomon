@@ -48,10 +48,13 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import _useEmoji from '../hooks/useEmoji'
-import { CommentEditorConfig } from '../utils/gomon-types'
-import {useAxios} from '../hooks/useAxios'
+import {
+  api,
+  CommentEditorConfig,
+  RegisteredEmojis,
+} from '../utils/gomon-types'
+import { useAxios } from '../hooks/useAxios'
 
-const RegisteredEmojis = '😀😁😅😂👀😍😎😏😟😭✌️👍👎🎉'
 const useEmoji = _useEmoji(RegisteredEmojis)
 
 export default defineComponent({
@@ -59,16 +62,21 @@ export default defineComponent({
   setup(props) {
     let rawContent = ref('')
     let showEmoji = ref(false)
-    const { run: runSubmitComment } = useAxios('...', {
-      
-    })
+    const { run: runSubmitComment } = useAxios(api('createComment'))
 
     function appendEmoji(idx: number) {
       rawContent.value += useEmoji(idx)
     }
 
-    function submitComment() {
-      
+    async function submitComment() {
+      await runSubmitComment({
+        method: 'post',
+        data: {
+          topicId: props.topicId,
+          content: rawContent.value,
+        },
+      })
+      console.log('OK?')
     }
 
     return {
@@ -145,7 +153,6 @@ export default defineComponent({
     right: 0.5rem;
   }
 }
-
 .gomon-delim {
   color: #ddd;
 }

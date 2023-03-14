@@ -1,5 +1,6 @@
 import { ref, shallowRef } from 'vue'
-import _axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
+import { axios } from '../utils/axios-decorate'
+import { AxiosResponse, AxiosRequestConfig } from 'axios'
 
 export interface UseAxiosOptions<T> {
   immediate?: boolean
@@ -15,14 +16,13 @@ export function useAxios<T>(
   config?: AxiosRequestConfig,
   options?: UseAxiosOptions<T>
 ) {
-  const axios = _axios
   const response = shallowRef<AxiosResponse<T>>()
   const data = ref<T>()
   const error = ref<unknown>()
   const isFinished = ref(false)
 
-  const run = () =>
-    axios(url, config)
+  const run = (overrideConfig?: AxiosRequestConfig) =>
+    axios(url, overrideConfig ?? config ?? {})
       .then((r) => {
         response.value = r
         const _data = r.data // hold
